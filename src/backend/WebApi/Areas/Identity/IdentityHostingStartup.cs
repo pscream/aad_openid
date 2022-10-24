@@ -116,7 +116,8 @@ namespace WebApi.Areas.Identity
             {
                 // The rest of the code breaks the redirection chain in case we want to generate a Jwt and redirect explicitly at the Frontend
                 context.Response.ContentType = "application/json; charset=utf-8";
-                await JsonSerializer.SerializeAsync(context.Response.Body, new JwtToken(token), typeof(JwtToken));
+                await JsonSerializer.SerializeAsync(context.Response.Body, 
+                    new JwtToken(token, context.SecurityToken.RawData, context.SecurityToken.EncodedHeader, context.SecurityToken.EncodedPayload), typeof(JwtToken));
                 context.HandleResponse();
             }
         }
