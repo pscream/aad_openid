@@ -38,6 +38,7 @@ namespace WebApi.Areas.Identity
                 var tenantId = context.Configuration["ApplicationSettings:AAD:TenantId"];
                 var clientId = context.Configuration["ApplicationSettings:AAD:ClientId"];
                 var clientSecret = context.Configuration["ApplicationSettings:AAD:ClientSecret"];
+                var callbackPath = context.Configuration["ApplicationSettings:AAD:CallbackPath"];
 
                 services.AddDbContext<IdentityDbContext>(options =>
                     options.UseSqlServer(
@@ -75,7 +76,7 @@ namespace WebApi.Areas.Identity
                     options.ClientId = clientId;
                     options.ClientSecret = clientSecret;
                     options.Authority = $"https://login.microsoftonline.com/{tenantId}/v2.0";
-                    options.CallbackPath = new PathString("/signin-oidc");
+                    options.CallbackPath = new PathString(callbackPath ?? "/signin-oidc");
                     // Here we add all possible scopes to get as much data as possible
                     options.Scope.Add("email");
                     options.Scope.Add("profile");
