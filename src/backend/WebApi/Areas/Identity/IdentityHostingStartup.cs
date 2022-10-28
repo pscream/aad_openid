@@ -99,7 +99,7 @@ namespace WebApi.Areas.Identity
                         {
                             var builder = new UriBuilder(context.ProtocolMessage.RedirectUri);
                             builder.Scheme = "https";
-                            builder.Port = -1;
+                            //builder.Port = -1;
                             context.ProtocolMessage.RedirectUri = builder.ToString();
                             return Task.FromResult(0);
                         }
