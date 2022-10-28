@@ -30,7 +30,11 @@ namespace WebApi
         {
             services.AddScoped<ISecurityManager, SecurityManager>();
             services.AddControllers();
-            services.AddRazorPages();
+            services.AddRazorPages(options => 
+            {
+                options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
+            });
+            services.AddAntiforgery(options => { options.Cookie.Expiration = TimeSpan.Zero; });
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(options =>
             {
