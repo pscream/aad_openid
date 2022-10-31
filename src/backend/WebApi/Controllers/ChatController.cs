@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using WebApi.Models.Requests;
-using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 
 namespace WebApi.Controllers
 {
@@ -216,7 +214,9 @@ namespace WebApi.Controllers
 
         }
 
-        [HttpGet("[area]/[controller]/{chatId}/messageOnBehalf")]
+        // We use 'POST' here because we need to send a token through the body of the request
+        // (the token is too long to be passed in a route), which is not usual practice for 'GET' requests
+        [HttpPost("[area]/[controller]/{chatId}/getMessagesOnBehalf")]
         public async Task<ActionResult> ListMessagesOnBehalf([FromRoute] string chatId, [FromBody] TeamsChat chat)
         {
 

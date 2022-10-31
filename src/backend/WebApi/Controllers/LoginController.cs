@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
 
 using WebApi.Models.Requests;
 using WebApi.Models.Responses;
-using WebApi.Security.Entities;
 using WebApi.Security.Services;
 
 namespace WebApi.Controllers
