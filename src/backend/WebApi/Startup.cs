@@ -14,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using WebApi.Security.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi
 {
@@ -43,6 +42,8 @@ namespace WebApi
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "A PoC for Azure Active Directory with OpenID authentication", Version = "v1.0" });
             });
+
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +59,13 @@ namespace WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 //app.UseHsts();
             }
+
+            // We allow 'Any Origing' policy of CORS for now. For current development, we need to use the frontend on 'localhost'
+            // Then we need to establish the policy and extract its settings into appsettings.json
+            app.UseCors(x => x
+                       .AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader());
 
             app.Use(async (context, next) =>
             {
