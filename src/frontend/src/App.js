@@ -1,101 +1,49 @@
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import MicrosoftLogin from "react-microsoft-login";
 
+import Chat from "./Chat";
 import "./App.css";
 
+const queryClient = new QueryClient();
+
 function App() {
-  const messageArray = [
-    {
-      message: "Some sample message 1",
-      from: { username: "John Dou" },
-      to: { username: "Some User" },
-      type: "incoming",
-    },
-    {
-      message: "Some sample message 2",
-      from: { username: "John Dou" },
-      to: { username: "Some User" },
-      type: "outgoing",
-    },
-    {
-      message: "Some sample message 3",
-      from: { username: "John Dou" },
-      to: { username: "Some User" },
-      type: "incoming",
-    },
-    {
-      message: "Some sample message 4",
-      from: { username: "John Dou" },
-      to: { username: "Some User" },
-      type: "incoming",
-    },
-    {
-      message: "Some sample message 5",
-      from: { username: "John Dou" },
-      to: { username: "Some User" },
-      type: "outgoing",
-    },
-  ];
-
-  const [messages, setMessages] = useState(messageArray);
-  const [message, setMessage] = useState("");
-
-  const divRef = useRef(null);
-
-  const onChangeMessage = useCallback((e) => {
-    setMessage(e.target.value);
-  }, []);
-
-  const onClickSend = useCallback(() => {
-    if (message) {
-      setMessages([
-        ...messages,
-        {
-          message,
-          from: { username: "John Dou" },
-          to: { username: "Some User" },
-          type: "outgoing",
-        },
-      ]);
-      setMessage("");
+  const authHandler = (err, data) => {
+    if (err) {
+      return err;
     }
-  }, [message, messages]);
+    const {
+      expiresOn,
+      idToken: { rawIdToken, preferredName },
+    } = data;
+    localStorage.setItem("accessToken", rawIdToken);
+    localStorage.setItem("expiresOn", expiresOn);
+    localStorage.setItem("preferredName", preferredName);
+    window.location.reload(false);
+  };
 
-  useEffect(() => {
-    divRef.current.scrollIntoView();
-  });
+  const accessToken = localStorage.getItem("accessToken");
+  const expiresOn = localStorage.getItem("expiresOn");
+  const preferredName = localStorage.getItem("preferredName");
+  const isExpired = new Date(expiresOn).getTime() < Date.now();
 
   return (
-    <div className="App">
-      <div className="Title">Sample Teams chat</div>
-      <div className="ChatWrap">
-        <div className="MessagesBox">
-          {messages.map((e, i) =>
-            e.type === "incoming" ? (
-              <div key={i} className="Message">
-                <div>
-                  <div className="Username">{e.from.username}</div>
-                  <div>{e.message}</div>
-                </div>
-              </div>
-            ) : (
-              <div key={i} className="Message Message_Outgoing">
-                <div className="MessageWrap">
-                  <div className="Username">{e.to.username}(you)</div>
-                  <div>{e.message}</div>
-                </div>
-              </div>
-            )
-          )}
-          <div ref={divRef} />
+    <QueryClientProvider client={queryClient}>
+      {preferredName && accessToken && !isExpired ? (
+        <Chat />
+      ) : (
+        <div>
+          <MicrosoftLogin
+            clientId={process.env.REACT_APP_MS_CLIENT_ID}
+            buttonTheme="dark"
+            prompt="select_account"
+            tenantUrl={`https://login.microsoftonline.com/${process.env.REACT_APP_MS_TENANT_ID}/`}
+            redirectUri={process.env.REACT_APP_MS_REDIRECT_URI} // default - http://localhost:3000/
+            authCallback={authHandler}
+          />
         </div>
-        <div className="MessagesSend">
-          <textarea value={message} onChange={onChangeMessage} className="Textarea" />
-          <button onClick={onClickSend} className="SendButton">
-            Send
-          </button>
-        </div>
-      </div>
-    </div>
+      )}
+    </QueryClientProvider>
   );
 }
 
